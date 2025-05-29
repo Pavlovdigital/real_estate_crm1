@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Редактирование пользователя{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 600px;">
+  <h3 class="mb-4">Редактировать пользователя: {{ user.username }}</h3>
+
+  <form method="post" autocomplete="off">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.username.label(class="form-label") }}
+      {{ form.username(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.password.label(class="form-label") }}
+      {{ form.password(class="form-control", placeholder="Новый пароль (если нужно)") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.role_id.label(class="form-label") }}
+      {{ form.role_id(class="form-select") }}
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{{ url_for('routes.admin_panel') }}" class="btn btn-secondary">Назад</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

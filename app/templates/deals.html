@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h2>Сделки</h2>
+    <a href="{{ url_for('routes.deal_add') }}" class="btn btn-success">Создать сделку</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th><th>Клиент</th><th>Объект</th><th>Агент</th><th>Стадия</th><th>Создана</th><th>Изм.</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for deal in deals %}
+        <tr>
+          <td>{{ deal.id }}</td>
+          <td>{{ deal.client.name if deal.client else '' }}</td>
+          <td>
+            {% if deal.property %}
+              <a href="{{ url_for('routes.property_detail', property_id=deal.property.id) }}">{{ deal.property.title }}</a>
+            {% endif %}
+          </td>
+          <td>{{ deal.agent.username if deal.agent else '' }}</td>
+          <td>{{ deal.stage }}</td>
+          <td>{{ deal.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+          <td>{{ deal.updated_at.strftime('%d.%m.%Y %H:%M') }}</td>
+          <td>
+            <a href="{{ url_for('routes.deal_edit', deal_id=deal.id) }}" class="btn btn-outline-secondary btn-sm">Редакт.</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

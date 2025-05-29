@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h2>Объекты недвижимости</h2>
+    <div>
+      <a href="{{ url_for('routes.property_add') }}" class="btn btn-success">Добавить объект</a>
+      <a href="{{ url_for('routes.import_properties') }}" class="btn btn-outline-primary">Импорт из Excel</a>
+      <a href="{{ url_for('routes.export_properties_pdf') }}" class="btn btn-outline-secondary">Экспорт PDF</a>
+      {% if current_user.role and current_user.role.name == 'admin' %}
+      <button id="parse-btn" class="btn btn-warning">Запустить парсер</button>
+      {% endif %}
+    </div>
+  </div>
+  <form class="row g-2 mb-3" method="get">
+    <div class="col-md-2">
+      <input type="text" name="street" placeholder="Улица" class="form-control" value="{{ request.args.get('street', '') }}">
+    </div>
+    <div class="col-md-2">
+      <input type="text" name="phone" placeholder="Телефон" class="form-control" value="{{ request.args.get('phone', '') }}">
+    </div>
+    <div class="col-md-2">
+      <input type="number" name="price_min" step="1" placeholder="Цена от" class="form-control" value="{{ request.args.get('price_min', '') }}">
+    </div>
+    <div class="col-md-2">
+      <input type="number" name="price_max" step="1" placeholder="Цена до" class="form-control" value="{{ request.args.get('price_max', '') }}">
+    </div>
+    <div class="col-md-2">
+      <input type="submit" class="btn btn-outline-dark w-100" value="Фильтр">
+    </div>
+    <div class="col-md-2">
+      <a href="{{ url_for('routes.properties') }}" class="btn btn-outline-secondary w-100">Сброс</a>
+    </div>
+  </form>
+  <div class="mb-3">
+    <div id="parser-status" class="alert alert-info py-1 px-3 mb-0" style="display:none"></div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>КАТ</th>
+          <th>Статус</th>
+          <th>Район</th>
+          <th>Цена</th>
+          <th>План</th>
+          <th>Эт</th>
+          <th>Эть</th>
+          <th>М</th>
+          <th>S</th>
+          <th>S кх</th>
+          <th>Блкн</th>
+          <th>П</th>
+          <th>Сост.</th>
+          <th>Телефон</th>
+          <th>Улица</th>
+          <th>Д-кв</th>
+          <th>Год</th>
+          <th>Источник</th>
+          <th>Фото</th>
+          <th>Изм.</th>
+          <th>Создано</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for prop in props %}
+        <tr>
+          <td>{{ prop.id }}</td>
+          <td>{{ prop.cat }}</td>
+          <td>{{ prop.status }}</td>
+          <td>{{ prop.district }}</td>
+          <td>{{ prop.price }}</td>
+          <td>{{ prop.plan }}</td>
+          <td>{{ prop.floor }}</td>
+          <td>{{ prop.total_floors }}</td>
+          <td>{{ prop.m }}</td>
+          <td>{{ prop.s }}</td>
+          <td>{{ prop.s_kh }}</td>
+          <td>{{ prop.blkn }}</td>
+          <td>{{ prop.p }}</td>
+          <td>{{ prop.condition }}</td>
+          <td>{{ prop.phone }}</td>
+          <td>{{ prop.street }}</td>
+          <td>{{ prop.d_kv }}</td>
+          <td>{{ prop.year }}</td>
+          <td>{{ prop.source }}</td>
+          <td>
+            {% if prop.photos %}
+              <a href="#" class="view-photos" data-photos="{{ prop.photos|e }}">Фото</a>
+            {% endif %}
+          </td>
+          <td>{{ prop.updated_at.strftime("%d.%m.%Y %H:%M") if prop.updated_at else '' }}</td>
+          <td>{{ prop.created_at.strftime("%d.%m.%Y %H:%M") if prop.created_at else '' }}</td>
+          <td>
+            <a href="{{ url_for('routes.property_detail', property_id=prop.id) }}" class="btn btn-outline-info btn-sm">Открыть</a>
+            {% if current_user.role and current_user.role.name in ['admin', 'manager'] %}
+              <a href="{{ url_for('routes.property_edit', property_id=prop.id) }}" class="btn btn-outline-secondary btn-sm">Редакт.</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Модальное окно для фото -->
+<div class="modal fade" id="photosModal" tabindex="-1" aria-labelledby="photosModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="photosModalLabel">Фото объекта</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body" id="modal-photos-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Парсер запуск
+  const btn = document.getElementById('parse-btn');
+  const statusBox = document.getElementById('parser-status');
+  if (btn) {
+    btn.onclick = function() {
+      statusBox.style.display = "block";
+      statusBox.textContent = "Парсер запущен...";
+      fetch('{{ url_for("routes.run_parser") }}', {method: "POST"})
+      .then(r => r.json()).then(data => {
+        if(data.ok) { updateStatus(); }
+        else { statusBox.textContent = "Ошибка запуска: " + (data.error || ""); }
+      });
+    };
+    // Автообновление статуса
+    function updateStatus() {
+      fetch('{{ url_for("routes.parser_status") }}')
+        .then(r => r.json())
+        .then(st => {
+          statusBox.textContent = `${st.step} (${st.percent}%)`;
+          if(st.percent < 100) setTimeout(updateStatus, 2000);
+          else setTimeout(() => statusBox.style.display="none", 5000);
+        });
+    }
+  }
+  // Модальное окно с фото
+  document.querySelectorAll('.view-photos').forEach(el => {
+    el.onclick = function(e) {
+      e.preventDefault();
+      let urls = this.getAttribute('data-photos').split(',');
+      let html = urls.map(u => `<img src="${u.trim()}" class="img-fluid mb-2 me-2" style="max-width:180px;">`).join('');
+      document.getElementById('modal-photos-list').innerHTML = html;
+      new bootstrap.Modal(document.getElementById('photosModal')).show();
+    };
+  });
+});
+</script>
+{% endblock %}

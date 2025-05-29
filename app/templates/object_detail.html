@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Объект #{{ prop.id }} ({{ prop.cat }})</h2>
+  <table class="table table-dark table-bordered">
+    <tr><th>Район</th><td>{{ prop.district }}</td></tr>
+    <tr><th>Цена</th><td>{{ prop.price }}</td></tr>
+    <tr><th>План</th><td>{{ prop.plan }}</td></tr>
+    <tr><th>Этаж/Этажность</th><td>{{ prop.floor }}/{{ prop.total_floors }}</td></tr>
+    <tr><th>Площадь (М/С/С кх)</th><td>{{ prop.m }}/{{ prop.s }}/{{ prop.s_kh }}</td></tr>
+    <tr><th>Балкон/П/Сост.</th><td>{{ prop.blkn }}/{{ prop.p }}/{{ prop.condition }}</td></tr>
+    <tr><th>Телефон</th><td>{{ prop.phone }}</td></tr>
+    <tr><th>Улица, дом, кв.</th><td>{{ prop.street }} {{ prop.d_kv }}</td></tr>
+    <tr><th>Год постр.</th><td>{{ prop.year }}</td></tr>
+    <tr><th>Описание</th><td>{{ prop.description }}</td></tr>
+    <tr><th>Источник</th><td>{{ prop.source }}</td></tr>
+    <tr><th>Фото</th>
+      <td>
+        {% if prop.photos %}
+          {% for url in prop.photos.split(',') %}
+            <img src="{{ url.strip() }}" class="img-thumbnail me-2 mb-2" style="max-width:120px;">
+          {% endfor %}
+        {% endif %}
+      </td>
+    </tr>
+    <tr><th>Изменено</th><td>{{ prop.updated_at.strftime("%d.%m.%Y %H:%M") }}</td></tr>
+    <tr><th>Создано</th><td>{{ prop.created_at.strftime("%d.%m.%Y %H:%M") }}</td></tr>
+  </table>
+  <a href="{{ url_for('routes.property_edit', property_id=prop.id) }}" class="btn btn-secondary">Редактировать</a>
+  <a href="{{ url_for('routes.properties') }}" class="btn btn-light">К списку</a>
+</div>
+{% endblock %}

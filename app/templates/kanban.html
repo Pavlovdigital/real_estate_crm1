@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <h3 class="mb-4">Канбан по сделкам</h3>
+  <div class="row">
+    <div class="col">
+      <h5>Новые</h5>
+      {% for deal in deals_new %}
+        <div class="card mb-2 bg-secondary">
+          <div class="card-body">
+            <div><b>{{ deal.property.title if deal.property else "Без объекта" }}</b></div>
+            <div>{{ deal.client.name if deal.client else '' }}</div>
+            <div><span class="badge bg-dark">{{ deal.stage }}</span></div>
+            <a href="{{ url_for('routes.move_deal', deal_id=deal.id, stage='В работе') }}" class="btn btn-sm btn-primary mt-1">→ В работе</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>В работе</h5>
+      {% for deal in deals_work %}
+        <div class="card mb-2 bg-info">
+          <div class="card-body">
+            <div><b>{{ deal.property.title if deal.property else "Без объекта" }}</b></div>
+            <div>{{ deal.client.name if deal.client else '' }}</div>
+            <div><span class="badge bg-dark">{{ deal.stage }}</span></div>
+            <a href="{{ url_for('routes.move_deal', deal_id=deal.id, stage='Завершена') }}" class="btn btn-sm btn-success mt-1">→ Завершена</a>
+            <a href="{{ url_for('routes.move_deal', deal_id=deal.id, stage='Новая') }}" class="btn btn-sm btn-secondary mt-1">← Новая</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>Завершены</h5>
+      {% for deal in deals_done %}
+        <div class="card mb-2 bg-success">
+          <div class="card-body">
+            <div><b>{{ deal.property.title if deal.property else "Без объекта" }}</b></div>
+            <div>{{ deal.client.name if deal.client else '' }}</div>
+            <div><span class="badge bg-dark">{{ deal.stage }}</span></div>
+            <a href="{{ url_for('routes.move_deal', deal_id=deal.id, stage='В работе') }}" class="btn btn-sm btn-info mt-1">← В работе</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

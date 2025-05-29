@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h3 class="mb-4">История изменений объекта</h3>
+  <table class="table table-striped table-dark table-bordered">
+    <thead>
+      <tr><th>Дата</th><th>Пользователь</th><th>Поле</th><th>Было</th><th>Стало</th></tr>
+    </thead>
+    <tbody>
+      {% for h in history %}
+      <tr>
+        <td>{{ h.changed_at.strftime('%d.%m.%Y %H:%M') }}</td>
+        <td>{{ h.user_id }}</td>
+        <td>{{ h.field }}</td>
+        <td>{{ h.old_value }}</td>
+        <td>{{ h.new_value }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{{ url_for('routes.property_detail', property_id=prop.id) }}" class="btn btn-light">К объекту</a>
+</div>
+{% endblock %}

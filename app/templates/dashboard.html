@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 text-center">
+  <h1>CRM Недвижимость</h1>
+  <div class="row mt-5">
+    <div class="col">
+      <div class="card text-bg-dark mb-3">
+        <div class="card-body"><h3>{{ props_count }}</h3><p>Объектов</p></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card text-bg-dark mb-3">
+        <div class="card-body"><h3>{{ deals_count }}</h3><p>Сделок</p></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card text-bg-dark mb-3">
+        <div class="card-body"><h3>{{ clients_count }}</h3><p>Клиентов</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

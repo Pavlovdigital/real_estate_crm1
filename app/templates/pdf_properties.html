@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Объекты недвижимости</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #888; padding: 5px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+<h2>Объекты недвижимости</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Заголовок</th>
+            <th>Адрес</th>
+            <th>Район</th>
+            <th>Цена</th>
+            <th>Площадь</th>
+            <th>Этаж</th>
+            <th>Комнат</th>
+            <th>Статус</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in props %}
+        <tr>
+            <td>{{ p.title }}</td>
+            <td>{{ p.address }}</td>
+            <td>{{ p.district }}</td>
+            <td>{{ p.price }}</td>
+            <td>{{ p.area }}</td>
+            <td>{{ p.floor }}/{{ p.total_floors }}</td>
+            <td>{{ p.rooms }}</td>
+            <td>{{ p.status }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация администратора{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+  <h2 class="mb-4">Регистрация администратора</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.username.label(class="form-label") }}
+      {{ form.username(class="form-control") }}
+      {% if form.username.errors %}
+        <div class="text-danger">{{ form.username.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control") }}
+      {% if form.email.errors %}
+        <div class="text-danger">{{ form.email.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.password.label(class="form-label") }}
+      {{ form.password(class="form-control") }}
+      {% if form.password.errors %}
+        <div class="text-danger">{{ form.password.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.confirm_password.label(class="form-label") }}
+      {{ form.confirm_password(class="form-control") }}
+      {% if form.confirm_password.errors %}
+        <div class="text-danger">{{ form.confirm_password.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">{{ form.submit.label.text }}</button>
+  </form>
+</div>
+{% endblock %}

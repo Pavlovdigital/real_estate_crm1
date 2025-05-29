@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width: 600px;">
+  <h3 class="mb-4">{% if edit %}Редактирование{% else %}Добавление{% endif %} клиента</h3>
+
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">{{ form.name.label(class="form-label") }}{{ form.name(class="form-control") }}</div>
+    <div class="mb-3">{{ form.phone.label(class="form-label") }}{{ form.phone(class="form-control") }}</div>
+    <div class="mb-3">{{ form.email.label(class="form-label") }}{{ form.email(class="form-control") }}</div>
+    <div class="mb-3">{{ form.notes.label(class="form-label") }}{{ form.notes(class="form-control", rows=2) }}</div>
+
+    <!-- Новые фильтры -->
+    <hr class="my-4">
+    <h5 class="mb-3">Фильтры интереса</h5>
+
+    <div class="mb-3">{{ form.price_min.label(class="form-label") }}{{ form.price_min(class="form-control") }}</div>
+    <div class="mb-3">{{ form.price_max.label(class="form-label") }}{{ form.price_max(class="form-control") }}</div>
+
+    <div class="mb-3">{{ form.districts.label(class="form-label") }}{{ form.districts(class="form-select", multiple=True) }}</div>
+    <div class="mb-3">{{ form.floor.label(class="form-label") }}{{ form.floor(class="form-control") }}</div>
+    <div class="mb-3">{{ form.condition.label(class="form-label") }}{{ form.condition(class="form-select") }}</div>
+    <div class="mb-3">{{ form.description.label(class="form-label") }}{{ form.description(class="form-control", rows=2) }}</div>
+
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+    <a href="{{ url_for('routes.clients') }}" class="btn btn-secondary ms-2">Отмена</a>
+  </form>
+</div>
+{% endblock %}

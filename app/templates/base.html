@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}CRM Недвижимость{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #181a1b; color: #fff; min-height:100vh;}
+    .table {color:#fff;}
+    .table thead {background:#2a2d2f;}
+    .card {background: #222326;}
+    .navbar, .modal-content { background: #191b1d !important;}
+    .form-control, .form-select {background:#232426; color:#eee;}
+    a {color:#66afe9;}
+    a:hover {color:#a5e8ff;}
+    .btn-primary {background:#0d6efd;}
+    .btn-success {background:#198754;}
+    .btn-secondary {background:#6c757d;}
+    .btn-info {background:#17a2b8;}
+    .img-thumbnail {background: #222; border: none;}
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark shadow mb-4">
+    <div class="container">
+      {% if current_user.is_authenticated %}
+        <a class="navbar-brand" href="{{ url_for('routes.dashboard') }}">CRM Недвижимость</a>
+      {% else %}
+        <a class="navbar-brand" href="#">CRM Недвижимость</a>
+      {% endif %}
+      <ul class="navbar-nav ms-auto">
+        {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.properties') }}">Объекты</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.clients') }}">Клиенты</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.deals') }}">Сделки</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.kanban_board') }}">Канбан</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.global_search') }}">Поиск</a></li>
+          {% if current_user.is_admin() %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.admin_panel') }}">Админка</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.logout') }}">Выход</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

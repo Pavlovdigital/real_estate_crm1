@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width: 700px;">
+  <h3 class="mb-4">{% if edit %}Редактирование{% else %}Создание{% endif %} сделки</h3>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="row">
+      <div class="col-md-4 mb-3">{{ form.client_id.label(class="form-label") }}{{ form.client_id(class="form-select") }}</div>
+      <div class="col-md-4 mb-3">{{ form.property_id.label(class="form-label") }}{{ form.property_id(class="form-select") }}</div>
+      <div class="col-md-4 mb-3">{{ form.agent_id.label(class="form-label") }}{{ form.agent_id(class="form-select") }}</div>
+      <div class="col-md-4 mb-3">{{ form.stage.label(class="form-label") }}{{ form.stage(class="form-select") }}</div>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+    <a href="{{ url_for('routes.deals') }}" class="btn btn-secondary ms-2">Отмена</a>
+  </form>
+</div>
+{% endblock %}
