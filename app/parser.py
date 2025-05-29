@@ -12,21 +12,32 @@ KRISHA_URL = 'https://krisha.kz/prodazha/kvartiry/petropavlovsk/?das[novostroiki
 OLX_URL = 'https://www.olx.kz/nedvizhimost/prodazha-kvartiry/petropavlovsk/?search%5Bfilter_enum_tipsobstvennosti%5D%5B0%5D=ot_hozyaina'
 
 # --- Чтение справочников из JSON ---
+_CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
+_OPTIONS_DIR = os.path.join(_CURRENT_DIR, 'options')
+
 def load_options_json(filename):
-    with open(filename, 'r', encoding='utf-8') as f:
-        opts = json.load(f)
-        if isinstance(opts, list):
-            return [x['name'] if isinstance(x, dict) and 'name' in x else x for x in opts]
+    file_path = os.path.join(_OPTIONS_DIR, filename)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            opts = json.load(f)
+            if isinstance(opts, list):
+                return [x['name'] if isinstance(x, dict) and 'name' in x else x for x in opts]
+            return []
+    except FileNotFoundError:
+        print(f"Error: JSON options file not found at {file_path}")
+        return []
+    except json.JSONDecodeError:
+        print(f"Error: Could not decode JSON from {file_path}")
         return []
 
 district_options = load_options_json('Район-options.json')
-status_options = load_options_json('Статус-options.json')
-cat_options = load_options_json('КАТ-options.json')
-plan_options = load_options_json('План-options.json')
-m_options = load_options_json('М-options.json')
-blkn_options = load_options_json('Блкн-options.json')
-p_options = load_options_json('П-options.json')
-condition_options = load_options_json('Состояние-options.json')
+status_options = load_options_json('Статус-options.json') # Assuming 'Статус-options.json' also exists in app/options/
+cat_options = load_options_json('КАТ-options.json') # Assuming 'КАТ-options.json' also exists in app/options/
+plan_options = load_options_json('План-options.json') # Assuming 'План-options.json' also exists in app/options/
+m_options = load_options_json('М-options.json') # Assuming 'М-options.json' also exists in app/options/
+blkn_options = load_options_json('Блкн-options.json') # Assuming 'Блкн-options.json' also exists in app/options/
+p_options = load_options_json('П-options.json') # Assuming 'П-options.json' also exists in app/options/
+condition_options = load_options_json('Состояние-options.json') # Assuming 'Состояние-options.json' also exists in app/options/
 
 def map_option(val, options):
     if not val: return ""

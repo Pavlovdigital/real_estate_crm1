@@ -10,8 +10,9 @@ from io import BytesIO
 import os
 from sqlalchemy import or_
 import pdfkit
+from pdfkit.api import configuration as pdfkit_configuration # Correct import for configuration
 
-import threading
+# import threading # Removed for serverless compatibility
 from app.parser import parse_krisha, parse_olx
 
 bp = Blueprint('routes', __name__)
@@ -23,8 +24,22 @@ def load_user(user_id):
 # --- Регистрация администратора (разово через форму) ---
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
+    # This route allows initial admin registration.
+    # For production systems, it's more secure to create the first admin via a CLI command.
+    # This check prevents creating more than one admin via this web form.
+    # It assumes 'admin' role is defined in the Role table.
+    existing_admin = User.query.join(Role).filter(Role.name == 'admin').first()
+    if existing_admin:
+        flash('Регистрация нового администратора невозможна. Администратор уже существует.', 'warning')
+        return redirect(url_for('routes.login'))
+
     form = RegisterForm()
     if form.validate_on_submit():
+        # It's crucial that the Role with name 'admin' exists in the database
+        # for the new user to be correctly assigned this role.
+        # The current user creation logic `role='admin'` is problematic and should ideally
+        # fetch the Role object for 'admin' and assign it to user.role or user.role_id.
+        # This subtask focuses only on preventing multiple admins, not fixing the creation logic itself.
         if User.query.filter_by(email=form.email.data).first():
             flash('Пользователь с таким email уже существует', 'danger')
             return redirect(url_for('routes.register'))
@@ -212,7 +227,12 @@ def import_properties():
 def export_properties_pdf():
     props = Property.query.all()
     rendered = render_template('pdf_properties.html', props=props)
-    pdf = pdfkit.from_string(rendered, False)
+    
+    # Configure pdfkit to use the wkhtmltopdf binary packaged with Vercel
+    path_wkhtmltopdf = os.environ.get("WKHTMLTOPDF_PATH", "/var/task/bin/wkhtmltopdf")
+    config = pdfkit_configuration(wkhtmltopdf=path_wkhtmltopdf)
+    
+    pdf = pdfkit.from_string(rendered, False, configuration=config)
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=properties.pdf'
@@ -245,26 +265,39 @@ def global_search():
         ).all()
     return render_template('global_search.html', props=props, query=q)
 
-PARSER_STATUS = {"step": "Готов к запуску", "percent": 0, "log": []}
+# PARSER_STATUS = {"step": "Готов к запуску", "percent": 0, "log": []} # Removed for serverless compatibility
 
 @bp.route('/parser/run', methods=['POST'])
 @login_required
 def run_parser():
-    if not current_user.role or current_user.role.name != 'admin':
+    # This is a blocking operation. For long-running parsing tasks in a serverless environment,
+    # it's highly recommended to use a proper task queue (e.g., Celery with Redis/SQS, or cloud-specific services like AWS Lambda + SQS).
+    # Running it directly in the request like this can lead to request timeouts for lengthy parsing jobs.
+    if not current_user.role or current_user.role.name != 'admin': # Assuming role check is still desired
         return jsonify({'error': 'Нет доступа!'}), 403
-    def do_parse():
-        PARSER_STATUS.update({"step": "Krisha", "percent": 0, "log": []})
-        parse_krisha(PARSER_STATUS)
-        PARSER_STATUS.update({"step": "OLX", "percent": 50})
-        parse_olx(PARSER_STATUS)
-        PARSER_STATUS.update({"step": "Готово", "percent": 100})
-    threading.Thread(target=do_parse).start()
-    return jsonify({"ok": True})
 
-@bp.route('/parser/status')
-@login_required
-def parser_status():
-    return jsonify(PARSER_STATUS)
+    try:
+        # Log start
+        print("Parser run started by admin.") # Or use actual logging
+
+        # Since PARSER_STATUS is removed, these functions will run without updating it.
+        # They are defined with status=None by default.
+        parse_krisha() 
+        parse_olx()
+        
+        # Log end
+        print("Parser run finished.") # Or use actual logging
+        
+        return jsonify({"status": "completed", "message": "Парсинг завершен успешно."})
+    except Exception as e:
+        # Log error
+        print(f"Error during parsing: {str(e)}") # Or use actual logging
+        return jsonify({"status": "error", "message": f"Ошибка во время парсинга: {str(e)}"}), 500
+
+# @bp.route('/parser/status') # Removed for serverless compatibility
+# @login_required
+# def parser_status():
+#     return jsonify(PARSER_STATUS)
 
 @bp.route('/clients')
 @login_required

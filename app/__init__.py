@@ -40,4 +40,10 @@ def create_app():
     app.register_blueprint(kanban.bp)
     app.register_blueprint(importer.bp)
 
+    # Create database tables if they don't exist
+    # This is useful for initial setup, especially with SQLite for local dev or simple previews.
+    # For production and complex schema changes, Flask-Migrate should be used.
+    with app.app_context():
+        db.create_all()
+
     return app
