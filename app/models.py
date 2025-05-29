@@ -4,54 +4,54 @@ from datetime import datetime
 
 # --- Справочники ---
 class District(db.Model):
-    _tablename_ = 'districts'
+    __tablename__ = 'districts'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, nullable=False)
 
 class StatusOption(db.Model):
-    _tablename_ = 'status_options'
+    __tablename__ = 'status_options'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True, nullable=False)
 
 class Category(db.Model):
-    _tablename_ = 'categories'
+    __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True, nullable=False)
 
 class PlanOption(db.Model):
-    _tablename_ = 'plan_options'
+    __tablename__ = 'plan_options'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True, nullable=False)
 
 class MOption(db.Model):
-    _tablename_ = 'm_options'
+    __tablename__ = 'm_options'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True, nullable=False)
 
 class BlknOption(db.Model):
-    _tablename_ = 'blkn_options'
+    __tablename__ = 'blkn_options'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True, nullable=False)
 
 class POption(db.Model):
-    _tablename_ = 'p_options'
+    __tablename__ = 'p_options'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True, nullable=False)
 
 class ConditionOption(db.Model):
-    _tablename_ = 'condition_options'
+    __tablename__ = 'condition_options'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, nullable=False)
 
 # --- Основные модели ---
 class Role(db.Model):
-    _tablename_ = 'roles'
+    __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, nullable=False)
     users = db.relationship('User', backref='role', lazy=True)
 
 class User(UserMixin, db.Model):
-    _tablename_ = 'users'  # исправлено: двойное подчеркивание
+    __tablename__ = 'users'  # исправлено: двойное подчеркивание
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(128), unique=True)
@@ -64,7 +64,7 @@ class User(UserMixin, db.Model):
     deals = db.relationship('Deal', backref='agent', lazy=True)
 
 class Property(db.Model):
-    _tablename_ = 'properties'
+    __tablename__ = 'properties'
     id = db.Column(db.Integer, primary_key=True)
     cat = db.Column(db.String(32))
     status = db.Column(db.String(32))
@@ -96,7 +96,7 @@ class Property(db.Model):
     history = db.relationship('PropertyHistory', backref='property', lazy=True)
 
 class Client(db.Model):
-    _tablename_ = 'clients'
+    __tablename__ = 'clients'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     phone = db.Column(db.String(32))
@@ -114,7 +114,7 @@ class Client(db.Model):
     description = db.Column(db.Text)
 
 class Deal(db.Model):
-    _tablename_ = 'deals'
+    __tablename__ = 'deals'
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id'))
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
@@ -124,7 +124,7 @@ class Deal(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class PropertyHistory(db.Model):
-    _tablename_ = 'property_history'
+    __tablename__ = 'property_history'
     id = db.Column(db.Integer, primary_key=True)
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

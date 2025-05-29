@@ -6,5 +6,29 @@
   },
   "routes": [
     { "src": "/(.*)", "dest": "/api/index.py" }
+  ],
+  "build": {
+    "env": {
+      "WKHTMLTOPDF_PATH": "/var/task/bin/wkhtmltopdf"
+    }
+  },
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "runtime": "python3.10",
+        "includeFiles": [
+          "./bin/wkhtmltopdf",
+          "app/**",
+          "api/**",
+          ".env",
+          "./requirements.txt",
+          "instance/**"
+        ],
+        "buildCommand": "apt-get update && apt-get install -y --no-install-recommends libssl-dev libfontconfig1 libxrender1 libjpeg62-turbo && mkdir -p ./bin && wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb && dpkg -x wkhtmltox_0.12.6.1-2.bullseye_amd64.deb . && cp ./usr/local/bin/wkhtmltopdf ./bin/ && chmod +x ./bin/wkhtmltopdf && rm wkhtmltox_0.12.6.1-2.bullseye_amd64.deb && rm -rf ./usr"
+      }
+    }
   ]
 }
