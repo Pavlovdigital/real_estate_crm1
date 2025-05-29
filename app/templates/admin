@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Админка{% endblock %}
+{% block content %}
+  <h3 class="mb-4">Админка</h3>
+
+  {% if users %}
+    <table class="table table-striped table-dark table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Имя</th>
+          <th>Email</th>
+          <th>Роль</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role.name if user.role else '-' }}</td>
+          <td>
+            <a href="{{ url_for('routes.admin_user_edit', user_id=user.id) }}" class="btn btn-sm btn-warning">Редакт.</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">Нет пользователей для отображения.</div>
+  {% endif %}
+{% endblock %}
