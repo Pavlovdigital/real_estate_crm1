@@ -1,0 +1,14 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-WTF
+Werkzeug
+pandas
+openpyxl
+pdfkit
+python-dotenv
+selenium
+webdriver-manager
+beautifulsoup4
+requests
+gunicorn
