@@ -7,3 +7,4 @@ pandas
 openpyxl
 pdfkit
 python-dotenv
+psycopg2-binary

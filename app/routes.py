@@ -24,15 +24,29 @@ def load_user(user_id):
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
+    # Populate choices for the role_id field
+    form.role_id.choices = [(r.id, r.name) for r in Role.query.order_by('name').all()]
+
     if form.validate_on_submit():
         if User.query.filter_by(email=form.email.data).first():
             flash('Пользователь с таким email уже существует', 'danger')
             return redirect(url_for('routes.register'))
+
+        selected_role = Role.query.get(form.role_id.data)
+        if not selected_role:
+            flash('Выбрана неверная роль.', 'danger') # Invalid role selected
+            return redirect(url_for('routes.register')) # Or render the form again
+
         hashed_password = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, email=form.email.data, password_hash=hashed_password, role='admin')
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password_hash=hashed_password,
+            role=selected_role # Use the role object selected in the form
+        )
         db.session.add(user)
         db.session.commit()
-        flash('Администратор зарегистрирован! Теперь войдите в систему.', 'success')
+        flash('Пользователь зарегистрирован! Теперь войдите в систему.', 'success') # User registered! Now log in.
         return redirect(url_for('routes.login'))
     return render_template('register.html', form=form)
 

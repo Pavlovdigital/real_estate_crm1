@@ -2,7 +2,7 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 from app import db
-from app.models import User
+from app.models import User, Role # Added Role import
 from werkzeug.security import generate_password_hash
 
 @click.command('create-admin')
