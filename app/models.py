@@ -61,7 +61,7 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
     
     # Обратная связь с сделками
-    deals = db.relationship('Deal', backref='agent', lazy=True)
+    deals = db.relationship('Deal', foreign_keys='Deal.agent_id', backref='agent', lazy=True)
 
 class Property(db.Model):
     __tablename__ = 'properties'
